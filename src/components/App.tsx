@@ -6,7 +6,7 @@ import Carousel from "./Carousel";
 const App = () => {
     return (
         <>
-            <Carousel step={20}>
+            <Carousel step={20} isHorizontal={false}>
                 <Chip text={"hhhh דגד דגדג גגג h"} color={"blue"} />
                 <ItemCard
                     name={"עגבנייה עסיסית"}
