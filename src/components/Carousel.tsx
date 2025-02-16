@@ -39,11 +39,13 @@ const DirectionButton = styled.button(() => ({
 interface CarouselContentProps {
     $isHorizontal: boolean;
 }
+
+const carouselGapSize = 5;
 const CarouselContent = styled.div<CarouselContentProps>(({ $isHorizontal }) => ({
     display: 'flex',
     alignItems: 'center',
     flexDirection: $isHorizontal ? 'row' : 'column',
-    gap: '5px',
+    gap: `${carouselGapSize}px`,
     overflow: "hidden",
     // overflowX: 'scroll',
     // overflowY: 'scroll',
@@ -51,14 +53,15 @@ const CarouselContent = styled.div<CarouselContentProps>(({ $isHorizontal }) => 
 
 interface CarouselProps {
     children: React.ReactNode[];
-    step: number;
+    step?: number;
+    byItem?: boolean;
     isHorizontal?: boolean;
 }
 
 const Carousel = (props: CarouselProps) => {
-    const { children, step, isHorizontal = true } = props;
+    const { children, step = 40, byItem = false, isHorizontal = true } = props;
 
-    if (step <= 0) {
+    if (!byItem && step <= 0) {
         throw new Error("Step must be a positive number.");
     }
 
@@ -70,6 +73,16 @@ const Carousel = (props: CarouselProps) => {
     const clientSizeProperty = useMemo(() => isHorizontal ? 'clientWidth' : 'clientHeight', [isHorizontal]);
     const scrollSizeProperty = useMemo(() => isHorizontal ? 'scrollWidth' : 'scrollHeight', [isHorizontal]);
     const scrollDirecton = useMemo(() => isHorizontal ? 'left' : 'top', [isHorizontal]);
+
+    const handleKeyPress = (event: React.KeyboardEvent) => {
+        if (!isNextDisabled && ((isHorizontal && event.key === "ArrowRight")
+            || (!isHorizontal && event.key === "ArrowDown"))) {
+            handleNext();
+        } else if (!isPrevDisabled && ((isHorizontal && event.key === "ArrowLeft")
+            || (!isHorizontal && event.key === "ArrowUp"))) {
+            handlePrev();
+        }
+    };
 
     useEffect(() => {
         if (!firstItemRef.current) return;
@@ -90,13 +103,15 @@ const Carousel = (props: CarouselProps) => {
     }, [scrollPosition]);
 
     const handleScroll = (direction: "prev" | "next") => {
-        if (!containerRef.current) return;
+        if (!containerRef.current || !firstItemRef.current) return;
 
         const isPrev = direction === "prev";
+        
+        const stepSize = byItem ? firstItemRef.current[clientSizeProperty] + carouselGapSize : step;
 
         const newScrollPosition = isPrev
-            ? Math.max(scrollPosition - step, 0)
-            : Math.min(scrollPosition + step, containerRef.current[scrollSizeProperty] - containerRef.current[clientSizeProperty]);
+            ? Math.max(scrollPosition - stepSize, 0)
+            : Math.min(scrollPosition + stepSize, containerRef.current[scrollSizeProperty] - containerRef.current[clientSizeProperty]);
 
         containerRef.current.scrollTo({
             [scrollDirecton]: newScrollPosition,
@@ -114,7 +129,7 @@ const Carousel = (props: CarouselProps) => {
     }
 
     return (
-        <CarouselContainer $size={containerSize} $isHorizontal={isHorizontal}>
+        <CarouselContainer $size={containerSize} $isHorizontal={isHorizontal} onKeyDown={handleKeyPress} tabIndex={0}>
             <DirectionButton
                 disabled={isPrevDisabled}
                 onClick={handlePrev}
