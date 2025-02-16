@@ -3,30 +3,26 @@ import styled from "styled-components";
 
 interface ChipContainerProps {
     $color: string;
-    $width: number;
 }
 
-const ChipContainer = styled.div<ChipContainerProps>(({$color, $width}) => ({
+const ChipContainer = styled.div<ChipContainerProps>(({$color}) => ({
     borderRadius: '20px',
     padding: '5px 10px',
     border: `solid 2px ${$color}`,
     textAlign: 'center',
     whiteSpace: 'nowrap',
-    width: `${$width}px`
-
 }));
 
 interface ChipProps {
     text: string;
     color: string;
-    width: number;
 }
 
 const Chip = (props: ChipProps) => {
-    const {text, color, width} = props;
+    const {text, color} = props;
 
     return( 
-        <ChipContainer $color={color} $width={width}>
+        <ChipContainer $color={color}>
             {text}
         </ChipContainer>
     )
