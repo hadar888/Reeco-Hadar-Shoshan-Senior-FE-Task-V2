@@ -131,6 +131,7 @@ const Carousel = (props: CarouselProps) => {
     return (
         <CarouselContainer $size={containerSize} $isHorizontal={isHorizontal} onKeyDown={handleKeyPress} tabIndex={0}>
             <DirectionButton
+                title="next"
                 disabled={isPrevDisabled}
                 onClick={handlePrev}
             >
@@ -148,6 +149,7 @@ const Carousel = (props: CarouselProps) => {
                 }
             </CarouselContent>
             <DirectionButton
+                title="prev"
                 disabled={isNextDisabled}
                 onClick={handleNext}
             >
